@@ -1,0 +1,5 @@
+knight~=1.1.2
+hunter~=3.7.0
+utils~=1.0.2
+pip~=25.0.1
+setuptools~=79.0.0
