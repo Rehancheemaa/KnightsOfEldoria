@@ -35,14 +35,23 @@ class Grid:
         new_x = new_x % self.width
         new_y = new_y % self.height
 
-        if self.get_entity_at(new_x, new_y) is not None:
-            return False
+        target_entity = self.get_entity_at(new_x, new_y)
+        if target_entity is not None and not isinstance(target_entity, Treasure):
+            entity_name = getattr(target_entity, 'name', 'unknown')
+            return False, f"{type(target_entity).__name__} ({entity_name})"  # Return the type and name of the blocking entity
 
         old_x, old_y = entity.position
-        del self.cells[(old_x, old_y)]
+        if (old_x, old_y) in self.cells:
+            del self.cells[(old_x, old_y)]
         self.cells[(new_x, new_y)] = entity
         entity.position = (new_x, new_y)
-        return True
+
+        # If the target entity is a treasure, collect it
+        if isinstance(target_entity, Treasure):
+            entity.collect_treasure(target_entity)
+            return True, None  # Return None when move is successful and treasure is collected
+
+        return True, None  # Return None when move is successful
 
     def remove_entity(self, entity):
         x, y = entity.position

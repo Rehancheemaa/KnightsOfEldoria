@@ -8,13 +8,17 @@ class Hunter:
         self.stamina_recovery_rate = 0.01  # 1% recovery per step
 
     def collect_treasure(self, treasure):
+        print(f"{self.name} attempting to collect treasure at {treasure.position}.")
         if self.stamina <= 0 or self.current_treasure is not None:
+            print(f"{self.name} cannot collect treasure: insufficient stamina or already carrying treasure.")
             return False
         if not treasure.collected:
             self.current_treasure = treasure
             treasure.collected = True
             self.stamina -= 0.02 * self.stamina  # Deplete 2% stamina
+            print(f"{self.name} collected treasure at {treasure.position}.")
             return True
+        print(f"Treasure at {treasure.position} already collected.")
         return False
 
     def deposit_treasure(self, hideout):

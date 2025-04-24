@@ -59,19 +59,26 @@ class Grid:
         return False
 
     def visualize(self):
-        print("\n🗺️ Current Grid Map:")
+        print(" ⭕️⭕️⭕️ Legend: ⭕️⭕️⭕️")
+        print("♦️ 🟢: Active Hunter 🟣: Other Hunters 🧭: Navigation Hunter 👻: Stealth Hunter ⚡: Speed Hunter 💪: Strength Hunter")
+        print("♦️ 🤺: Knight")
+        print("♦️ 👑: Gold Treasure 🪙: Silver Treasure 💎: Diamond Treasure 🥉: Bronze Treasure")
+        print("♦️ ⛺: Hideout")
+        print()  # Add a blank line before the grid
+        print("🗺️ Current Grid Map:")
         for y in range(self.height):
             row = ""
             for x in range(self.width):
                 entity = self.get_entity_at(x, y)
                 if entity is None:
-                    row += " __ "
+                    row += " ➖ "
                 elif isinstance(entity, Hunter):
-                    # Show controlled hunter as '🎮' and other hunters as '🏹'
+                    # Show controlled hunter with skill icon
+                    skill_icon = {"navigation": "🧭", "stealth": "👻", "speed": "⚡ ", "strength": "💪"}[entity.skill]
                     if hasattr(entity, 'is_controlled') and entity.is_controlled:
-                        row += " 🕵🏻 "
+                        row += f"🟢{skill_icon}{entity.name.split('-')[1]}"  # Active hunter icon with skill and number
                     else:
-                        row += " 🏹 "
+                        row += f"🟣{skill_icon}{entity.name.split('-')[1]} "  # Hunter icon with skill and number
                 elif isinstance(entity, Knight):
                     row += " 🤺 "
                 elif isinstance(entity, Treasure):
@@ -122,7 +129,7 @@ def configure_simulation():
     print("Welcome to the Eldoria Simulation!")
     while True:
         try:
-            grid_size = int(input("Enter grid size (e.g., 20 for a 20x20 grid): "))
+            grid_size = int(input("Enter grid size (e.g., 20 for a 20x20 grid) 🗺️: "))
             if grid_size < 5:
                 print("Grid size must be at least 5x5 for meaningful simulation")
                 continue
@@ -134,15 +141,15 @@ def configure_simulation():
             rec_hideouts = max(2, grid_size // 5)
 
             print(f"\nRecommended ranges for {grid_size}x{grid_size} grid:")
-            print(f"Hunters: 1-{rec_hunters}")
-            print(f"Knights: 1-{rec_knights}")
-            print(f"Treasures: 1-{rec_treasures}")
-            print(f"Hideouts: 1-{rec_hideouts}")
+            print(f"🕵🏻 Hunters: 1-{rec_hunters}")
+            print(f"🤺 Knights: 1-{rec_knights}")
+            print(f"💎 Treasures: 1-{rec_treasures}")
+            print(f"⛺ Hideouts: 1-{rec_hideouts}")
 
-            num_hunters = int(input("\nEnter number of hunters: "))
-            num_knights = int(input("Enter number of knights: "))
-            num_treasures = int(input("Enter number of treasures: "))
-            num_hideouts = int(input("Enter number of hideouts: "))
+            num_hunters = int(input("\nEnter number of hunters 🕵🏻: "))
+            num_knights = int(input("Enter number of knights 🤺: "))
+            num_treasures = int(input("Enter number of treasures 💎: "))
+            num_hideouts = int(input("Enter number of hideouts ⛺: "))
 
             total_entities = num_hunters + num_knights + num_treasures + num_hideouts
             if total_entities > max_entities:
@@ -211,7 +218,8 @@ def main():
 
             sim.grid.visualize()
 
-            command = input("Choose action (move [up/down/left/right], rest, status, find treasure): ").strip().lower()
+            command = input(
+                "Choose action (move [up/down/left/right], rest, status, find_treasure, change_hunter): ").strip().lower()
 
             x, y = pos
             new_pos = None
@@ -230,13 +238,40 @@ def main():
             elif command == "status":
                 print(f"Stamina: {controlled_hunter.stamina:.2f}, Skill: {controlled_hunter.skill}")
                 print(f"Treasure: {controlled_hunter.current_treasure if controlled_hunter.current_treasure else 'None'}")
-            elif command == "find treasure":
+            elif command == "find_treasure":
                 paths = find_paths_to_treasures(sim.grid, controlled_hunter.position, sim.treasures)
                 if paths:
                     for treasure, path in paths.items():
                         print(f"Path to {treasure.treasure_type} treasure: {path}")
                 else:
                     print("No reachable treasures found.")
+            elif command.startswith("change_hunter"):
+                try:
+                    print(f"Command received: {command}")  # Debugging output
+                    # Split and strip any extra spaces from the command
+                    parts = command.split()
+                    print(f"Parsed parts: {parts}")  # Debugging output
+                    print(f"Parsed parts: {len(parts)}")  # Debugging output
+
+                    if len(parts) != 2:
+                        print("❌ Invalid command format. Use 'change_hunter <number>'.")
+                        continue
+
+                    _, index_str = parts  # Extract the index
+                    print(f"Parsed index string: '{index_str}'")  # Debugging output
+                    index = int(index_str)  # Convert to integer
+
+                    if index < 1 or index > len(sim.hunters):
+                        print(f"❌ Invalid hunter number. Please enter a number between 1 and {len(sim.hunters)}.")
+                        continue
+
+                    change_active_hunter(sim, index - 1)  # Convert to zero-based index
+                    controlled_hunter = sim.hunters[index - 1]  # Update the controlled_hunter variable
+                    print(f"Changed active hunter to {controlled_hunter.name}")  # Feedback after change
+
+                except ValueError:
+                    print("❌ Invalid command format. Use 'change hunter <number>'.")
+                continue
             else:
                 print("❌ Invalid command.")
                 continue
@@ -277,6 +312,21 @@ def main():
     except Exception as e:
         print(f"An error occurred: {e}")
         raise
+
+def change_active_hunter(sim, new_hunter_index):
+    """Change the active (controlled) hunter to the one specified by new_hunter_index."""
+    print(f"Attempting to change active hunter to index: {new_hunter_index}")  # Debugging output
+    # Ensure the index is within bounds
+    if 0 <= new_hunter_index < len(sim.hunters):
+        # Unmark the current controlled hunter
+        for hunter in sim.hunters:
+            hunter.is_controlled = False
+        # Mark the new controlled hunter
+        new_hunter = sim.hunters[new_hunter_index]
+        new_hunter.is_controlled = True
+        print(f"🎮 Control switched to: {new_hunter.name} ({new_hunter.skill} specialist)")
+    else:
+        print("❌ Invalid hunter index.")
 
 if __name__ == "__main__":
     main()

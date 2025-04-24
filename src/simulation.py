@@ -14,29 +14,7 @@ class Simulation:
         self.initialize_grid()
 
     def initialize_grid(self):
-        # Add hideouts
-        for i in range(3):
-            x, y = self.random_position()
-            hideout = Hideout(f"Hideout-{i}", (x, y))
-            self.add_hideout(hideout, x, y)
-
-        # Add hunters
-        for _ in range(5):
-            hunter = Hunter(name="Hunter", stamina=1.0, skill="navigation")
-            x, y = self.random_position()
-            self.add_hunter(hunter, x, y)
-
-        # Add treasures
-        for _ in range(10):
-            treasure = Treasure(treasure_type="gold")
-            x, y = self.random_position()
-            self.add_treasure(treasure, x, y)
-
-        # Add knights
-        for _ in range(2):
-            knight = Knight(name="Knight", energy=1.0)
-            x, y = self.random_position()
-            self.add_knight(knight, x, y)
+        pass  # Removed the method to prevent adding extra entities
 
     def random_position(self):
         return (random.randint(0, self.width - 1), random.randint(0, self.height - 1))
@@ -76,6 +54,7 @@ class Simulation:
                 nearest_hideout = self._find_nearest_entity(hunter.position, self.hideouts)
 
                 if nearest_treasure and hunter.current_treasure is None:
+                    print(f"{hunter.name} at {hunter.position} with stamina {hunter.stamina:.1f} attempting to collect treasure at {nearest_treasure.position}.")
                     if hunter.position == nearest_treasure.position:
                         hunter.collect_treasure(nearest_treasure)
                         if nearest_treasure.collected:
@@ -136,3 +115,22 @@ class Simulation:
         if self.grid.is_within_bounds(new_x, new_y):
             return [new_x, new_y]
         return [x, y]
+
+    def move_active_hunter(self, active_hunter, direction):
+        if active_hunter.stamina > 0:
+            x, y = active_hunter.position
+            if direction == 'up':
+                new_pos = (x, y - 1)
+            elif direction == 'down':
+                new_pos = (x, y + 1)
+            elif direction == 'left':
+                new_pos = (x - 1, y)
+            elif direction == 'right':
+                new_pos = (x + 1, y)
+            else:
+                return  # Invalid direction
+
+            if self.grid.is_within_bounds(*new_pos):
+                success, blocker = self.grid.move_entity(active_hunter, *new_pos)
+                if not success:
+                    print(f"⚠️ Move blocked: space occupied by {blocker}.")

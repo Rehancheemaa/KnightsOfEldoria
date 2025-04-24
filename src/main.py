@@ -44,10 +44,11 @@ def main():
 
     # Run the simulation
     step = 0
+    active_hunter = sim.hunters[0]  # Assuming the first hunter is the active one
     while True:
         step += 1
         print(f"\nStep {step}:")
-        if not sim.step():
+        if not sim.step(skip_hunter=active_hunter):
             break
 
         # Detailed status reports
@@ -55,6 +56,13 @@ def main():
             print(f"Hunter {hunter.name} at {hunter.position} with stamina {hunter.stamina:.1f}")
         for knight in sim.knights:
             print(f"Knight {knight.name} at {knight.position} with energy {knight.energy:.1f}")
+
+        # Capture user input for moving the active hunter
+        direction = input("Enter direction for active hunter (up, down, left, right): ").strip().lower()
+        if direction in ['up', 'down', 'left', 'right']:
+            sim.move_active_hunter(active_hunter, direction)
+        else:
+            print("Invalid direction. Please enter 'up', 'down', 'left', or 'right'.")
 
     print("Simulation completed.")
 
