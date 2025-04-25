@@ -46,8 +46,8 @@ class Simulation:
     def step(self, skip_hunter=None):
         # Process hunter actions
         for hunter in self.hunters:
-            if hunter is skip_hunter:
-                continue  # Skip user-controlled hunter
+            # if hunter is skip_hunter:
+            #     continue  # Skip user-controlled hunter
 
             if hunter.stamina > 0:
                 nearest_treasure = self._find_nearest_entity(hunter.position, self.treasures)

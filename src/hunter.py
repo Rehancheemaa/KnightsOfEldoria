@@ -21,6 +21,12 @@ class Hunter:
         print(f"Treasure at {treasure.position} already collected.")
         return False
 
+    def can_collect_treasure(self, treasure):
+        # Check if the treasure is in an adjacent cell
+        tx, ty = treasure.position
+        hx, hy = self.position
+        return abs(tx - hx) <= 1 and abs(ty - hy) <= 1
+
     def deposit_treasure(self, hideout):
         if self.current_treasure:
             hideout.store_treasure(self.current_treasure.value)
