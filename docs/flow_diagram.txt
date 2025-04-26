@@ -1,0 +1,164 @@
+KNIGHTS OF ELDORIA - FLOW DIAGRAM
+================================
+
+1. INITIALIZATION
+-----------------
+[User Input] --> [Configure Simulation]
+    |
+    v
+[Create Grid] --> [Initialize Entities]
+    |
+    v
+[Create Modern Grid UI] --> [Start Game Loop]
+
+2. ENTITY TYPES
+---------------
+[Hunter]
+    |
+    +--> [Navigation Specialist]
+    +--> [Stealth Specialist]
+    +--> [Speed Specialist]
+    +--> [Strength Specialist]
+
+[Knight]
+    |
+    +--> [Energy-based Movement]
+    +--> [Defensive Role]
+
+[Treasure]
+    |
+    +--> [Bronze]
+    +--> [Silver]
+    +--> [Gold]
+    +--> [Diamond]
+
+[Hideout]
+    |
+    +--> [Treasure Storage]
+    +--> [Safe Zone]
+
+3. GAME LOOP
+------------
+[Game Loop]
+    |
+    +--> [User Input]
+    |       |
+    |       +--> [Movement (Arrow Keys)]
+    |       +--> [Rest (R Key)]
+    |       +--> [Find Treasure (F Key)]
+    |
+    +--> [Update Game State]
+    |       |
+    |       +--> [Move Entities]
+    |       +--> [Check Collisions]
+    |       +--> [Collect Treasures]
+    |       +--> [Update Stamina/Energy]
+    |
+    +--> [Render Grid]
+            |
+            +--> [Draw Entities]
+            +--> [Show Paths]
+            +--> [Update Status]
+
+4. MOVEMENT SYSTEM
+------------------
+[Entity Movement]
+    |
+    +--> [Check Bounds]
+    |       |
+    |       +--> [Within Grid] --> [Continue]
+    |       +--> [Out of Bounds] --> [Block Movement]
+    |
+    +--> [Check Target]
+    |       |
+    |       +--> [Empty] --> [Allow Movement]
+    |       +--> [Treasure] --> [Collect & Move]
+    |       +--> [Other Entity] --> [Block Movement]
+    |
+    +--> [Update Position]
+            |
+            +--> [Remove from Old Position]
+            +--> [Place in New Position]
+
+5. TREASURE COLLECTION
+----------------------
+[Treasure Collection]
+    |
+    +--> [Check Entity Type]
+    |       |
+    |       +--> [Hunter] --> [Allow Collection]
+    |       +--> [Other] --> [Block Collection]
+    |
+    +--> [Update Inventory]
+            |
+            +--> [Add to Collected Treasures]
+            +--> [Remove from Grid]
+
+6. PATH FINDING
+---------------
+[Path Finding]
+    |
+    +--> [BFS Algorithm]
+    |       |
+    |       +--> [Start Position]
+    |       +--> [Target Position]
+    |       +--> [Valid Moves]
+    |
+    +--> [Path Visualization]
+            |
+            +--> [Highlight Path]
+            +--> [Show Direction]
+
+7. UI COMPONENTS
+----------------
+[Modern Grid UI]
+    |
+    +--> [Grid Display]
+    |       |
+    |       +--> [Draw Grid Lines]
+    |       +--> [Draw Entities]
+    |       +--> [Show Active Entity]
+    |
+    +--> [Status Bar]
+            |
+            +--> [Show Current Status]
+            +--> [Display Messages]
+
+8. GAME END CONDITIONS
+----------------------
+[Game End]
+    |
+    +--> [All Treasures Collected]
+    +--> [Max Steps Reached]
+    +--> [User Quit]
+    |
+    +--> [Display Final Score]
+            |
+            +--> [Show Collected Treasures]
+            +--> [Show Remaining Entities]
+
+9. ERROR HANDLING
+-----------------
+[Error Handling]
+    |
+    +--> [Invalid Input]
+    +--> [Out of Bounds]
+    +--> [Entity Collision]
+    +--> [File Loading Errors]
+    |
+    +--> [Display Error Message]
+            |
+            +--> [Log Error]
+            +--> [Continue Game]
+
+10. DATA FLOW
+-------------
+[Data Flow]
+    |
+    +--> [User Input] --> [Game Logic] --> [UI Update]
+    |
+    +--> [Entity State] --> [Grid State] --> [Visual Update]
+    |
+    +--> [Path Finding] --> [Movement] --> [Collision Detection]
+    |
+    +--> [Treasure Collection] --> [Score Update] --> [Status Update] 
